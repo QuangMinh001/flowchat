@@ -5,12 +5,12 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import vn.dev.tttn.entity.Group;
-import vn.dev.tttn.entity.Spost;
 import vn.dev.tttn.entity.User;
 import vn.dev.tttn.illconst.Constants;
 
@@ -22,6 +22,9 @@ public class GroupService extends BaseService<Group> implements Constants{
 		// TODO Auto-generated method stub
 		return Group.class;
 	}
+	
+	@Autowired
+	private UserService userService;
 	
 	public List<Group> getMyGroup(User user){
 		return user.getGroups();
@@ -36,7 +39,7 @@ public class GroupService extends BaseService<Group> implements Constants{
 	}
 	
 	@Transactional
-	public Group saveGroup(Group group, MultipartFile pictureFile) {
+	public void saveGroup(Group group, MultipartFile pictureFile, User user) {
 		String path;
 		
 		// Save
@@ -55,8 +58,19 @@ public class GroupService extends BaseService<Group> implements Constants{
 			group.setAvatar("group-cover-images/cover.png");
 		}
 		group.setCreateDate(new Date());
-//		user.addGroup
-		return super.saveOrUpdate(group);
+		group.setUserId(user.getId());
+		super.saveOrUpdate(group);
+		user.addGroup(group);
+		userService.saveOrUpdate(user);
+	}
+	
+	public boolean checkInGroup(User userLogined, Integer groupId) {
+		Group _group = getById(groupId);
+		List<Group> groupsOfUser = userLogined.getGroups();
+		if(groupsOfUser.contains(_group)) {
+			return true;
+		}
+		return false;
 	}
 
 }

@@ -24,7 +24,7 @@ public class SecureConfigurer extends WebSecurityConfigurerAdapter{
 												  //trinh duyet deu duoc bat trong phuong thuc nay
 		
 		//Cho phep cac request, static resources khong bi rang buoc login
-		.antMatchers("/customer/**", "/FileUploads/**", "/admin/**","/user/**", "/login", "/logout").permitAll()
+		.antMatchers("/StorageFolder/**", "/admin/**","/user/**", "/login", "/logout").permitAll()
 		
 		//Cac requests co action bat dau voi "/manager/..." phai xac thuc (login) moi duoc vao (authenticated())
 //		.antMatchers("/manager/**").authenticated()
@@ -66,19 +66,4 @@ public class SecureConfigurer extends WebSecurityConfigurerAdapter{
 			auth.userDetailsService(userDetailsService).passwordEncoder(new BCryptPasswordEncoder(4));
 		}
 		
-		
-
-//		public static void main(String[] args) {
-//			System.out.println(new BCryptPasswordEncoder(4).encode("administrator")); // mat khau de ma hoa
-//			System.out.println(new BCryptPasswordEncoder(4).encode("admin01"));
-//			System.out.println(new BCryptPasswordEncoder(4).encode("admin02"));
-//			System.out.println(new BCryptPasswordEncoder(4).encode("customer01"));
-//			System.out.println(new BCryptPasswordEncoder(4).encode("customer02"));
-////			$2a$04$CGSp7ZE7B6IBEJlCENxAvOB7FQ6ufQWjE9UX05VV7cUjgLUTf1U5q
-////			$2a$04$H.xQyliTaNphBprYvXydK.Jhm6jw.oS9G5ft9LKzqIzsI4Epraaeu
-////			$2a$04$J1XyW.A//TIoh47CJXFo2OvSOQTRcDPkxTDTbQ95ogQ.LMJKcsmLy
-////			$2a$04$WzrHwgiSCM6K7aI8l.kVr.6QJ.elModN0Fb5vnG7xsah2.jAgjI0y
-////			$2a$04$2UsjV1sNEysDBRKbraj9ROA.7naIp7dRNVenq0E2Fxh8./VjG.02W
-//
-//		}
 }

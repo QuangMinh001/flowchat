@@ -19,23 +19,6 @@ public class BaseController {
 	protected HttpSession session;
 	
 	
-//	// Lay thong tin cua user dang nhap
-//	@ModelAttribute("userLogined")
-//	public User getUserLogined() {
-//		// SecurityContextHolder class quan ly thong tin user
-//		Object userLogined = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//
-//		if (userLogined != null && userLogined instanceof UserDetails) {
-//
-//			User user = (User) userLogined;
-//			
-//			System.out.println("in BaseController getUserLogined function tttn");
-//			System.out.println("user name: " + user.getUsername());
-//			System.out.println("userlogined id tttn: " + user.getId());
-//			return user;
-//		}
-//		return new User();
-//	}
 	// Lay thong tin cua user dang nhap
 	@ModelAttribute("userLogined")
 	public User getUserLogined() {

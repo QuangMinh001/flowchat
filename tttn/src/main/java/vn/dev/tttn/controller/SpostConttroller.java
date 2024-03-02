@@ -14,10 +14,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import vn.dev.tttn.entity.Comment;
 import vn.dev.tttn.entity.Group;
 import vn.dev.tttn.entity.Spost;
 import vn.dev.tttn.entity.User;
+import vn.dev.tttn.service.CommentService;
 import vn.dev.tttn.service.GroupService;
+import vn.dev.tttn.service.RememberService;
 import vn.dev.tttn.service.SpostService;
 
 @Controller
@@ -28,6 +31,12 @@ public class SpostConttroller extends BaseController{
 	
 	@Autowired
 	private GroupService groupService;
+	
+	@Autowired
+	private RememberService rememberService;
+	
+	@Autowired
+	private CommentService commentService;
 	
 	@RequestMapping(value = "/user/post", method = RequestMethod.POST)
 	public String saveAddProduct (@ModelAttribute("newSpost") Spost newSpost, // được khởi tạo từ newSpost bên homeController
@@ -45,7 +54,7 @@ public class SpostConttroller extends BaseController{
 	}
 	
 	@RequestMapping(value = "/user/group/post", method = RequestMethod.POST)
-	public String saveAddProductInGroup (@ModelAttribute("newSpost") Spost newSpost, // được khởi tạo từ newSpost bên homeController
+	public String saveAddProductInGroup (@ModelAttribute("newSpost") Spost newSpost,
 									BindingResult bindingResult,
 									@RequestParam("protect") String protect,
 									@RequestParam("picture") MultipartFile picture,
@@ -64,6 +73,7 @@ public class SpostConttroller extends BaseController{
 		}
 		return "redirect:/user/group/" + groupId;
 	}
+	
 	
 	// like hoac bo bo like
 	@RequestMapping(value = "/user/home/like/{spostId}", method = RequestMethod.GET)
@@ -92,6 +102,94 @@ public class SpostConttroller extends BaseController{
 		User userLogined = userService.getByUsername(getUsernameLogined());
 		spostService.changeLikeStatus(spost, userLogined.getId());
 		return "redirect:/user/group/" + groupFocusId;
+	}
+	
+	
+	// Delete
+	@RequestMapping(value = {"/user/spost/home/delete/{spostId}"}, method = RequestMethod.GET)
+	public String deleteHomeSpost(@PathVariable("spostId") Integer spostId) throws IOException {
+		spostService.delete(spostService.getById(spostId));
+		return "redirect:/user/home";
+	}
+	
+	@RequestMapping(value = {"/user/spost/group/delete/{spostId}"}, method = RequestMethod.GET)
+		public String deleteGroupSpost(@PathVariable("spostId") Integer spostId) throws IOException {
+		spostService.delete(spostService.getById(spostId));
+		Integer groupFocusId = (Integer) session.getAttribute("groupFocusId");
+		return "redirect:/user/group/" + groupFocusId;
+	}
+	
+	@RequestMapping(value = {"/user/spost/profile/delete/{spostId}"}, method = RequestMethod.GET)
+		public String deleteProfileSpost(@PathVariable("spostId") Integer spostId) throws IOException {
+		spostService.delete(spostService.getById(spostId));
+		Integer userId = (Integer) session.getAttribute("userFocusId");
+		return "redirect:/user/profile/"+userId;
+	}
+	
+	
+	// Remember
+	@RequestMapping(value = {"/user/spost/home/remember/{spostId}"}, method = RequestMethod.GET)
+	public String rememberHomeSpost(@PathVariable("spostId") Integer spostId) throws IOException {
+		rememberService.remember(spostId, getUserLogined().getId());
+		return "redirect:/user/home";
+	}
+	
+	@RequestMapping(value = {"/user/spost/group/remember/{spostId}"}, method = RequestMethod.GET)
+	public String rememberGroupSpost(@PathVariable("spostId") Integer spostId) throws IOException {
+		rememberService.remember(spostId, getUserLogined().getId());
+		Integer groupFocusId = (Integer) session.getAttribute("groupFocusId");
+		return "redirect:/user/group/" + groupFocusId;
+	}
+	
+	@RequestMapping(value = {"/user/spost/profile/remember/{spostId}"}, method = RequestMethod.GET)
+		public String rememberProfileSpost(@PathVariable("spostId") Integer spostId) throws IOException {
+		rememberService.remember(spostId, getUserLogined().getId());
+		Integer userId = (Integer) session.getAttribute("userFocusId");
+		return "redirect:/user/profile/"+userId;
+	}
+	
+	
+	// Comment
+	@RequestMapping(value = {"/user/spost/home/comment/{spostId}"}, method = RequestMethod.POST)
+	public String commentHomeSpost(@PathVariable("spostId") Integer spostId,
+			@RequestParam("comment") String comment) throws IOException {
+			
+		
+		Comment newComment = new Comment();
+		newComment.setContent(comment);
+		newComment.setSpost_comment(spostService.getById(spostId));
+		newComment.setUserId(getUserLogined().getId());
+		newComment.setCreateDate(new Date());
+		commentService.saveOrUpdate(newComment);
+		return "redirect:/user/home";
+	}
+	
+	@RequestMapping(value = {"/user/spost/group/comment/{spostId}"}, method = RequestMethod.POST)
+	public String commentGroupSpost(@PathVariable("spostId") Integer spostId,
+			@RequestParam("comment") String comment) throws IOException {
+		
+		Comment newComment = new Comment();
+		newComment.setContent(comment);
+		newComment.setSpost_comment(spostService.getById(spostId));
+		newComment.setUserId(getUserLogined().getId());
+		newComment.setCreateDate(new Date());
+		commentService.saveOrUpdate(newComment);
+		Integer groupFocusId = (Integer) session.getAttribute("groupFocusId");
+		return "redirect:/user/group/" + groupFocusId;
+	}
+	
+	@RequestMapping(value = {"/user/spost/profile/comment/{spostId}"}, method = RequestMethod.POST)
+		public String commentProfileSpost(@PathVariable("spostId") Integer spostId,
+				@RequestParam("comment") String comment) throws IOException {
+		
+		Comment newComment = new Comment();
+		newComment.setContent(comment);
+		newComment.setSpost_comment(spostService.getById(spostId));
+		newComment.setUserId(getUserLogined().getId());
+		newComment.setCreateDate(new Date());
+		commentService.saveOrUpdate(newComment);
+		Integer userId = (Integer) session.getAttribute("userFocusId");
+		return "redirect:/user/profile/"+userId;
 	}
 	
 }

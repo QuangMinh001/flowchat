@@ -78,7 +78,7 @@ public class UserService extends BaseService<User>{
 //		return userModels;
 //	}
 	
-	public List<User> getFriendEntitiesList(Integer userId){
+	public List<User> getMyFollows(Integer userId){
 		
 		List<User> users = new ArrayList<User>();
 		List<Friend> friends = friendService.getFriendList(userId); //lấy danh sách bạn của đôi tượng
@@ -93,4 +93,7 @@ public class UserService extends BaseService<User>{
 		}
 		return users;
 	}
+	
+	
+	
 }

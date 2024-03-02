@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +29,7 @@ public class GroupController extends BaseController{
 	@Autowired
 	private SpostService spostService;
 	
+	// ok
 	@RequestMapping(value = {"/user/group", "/user/group/{groupId}"}, method=RequestMethod.GET)
 	public String renderGroup(final Model model,
 			@PathVariable(required = false) Integer groupId) {
@@ -56,24 +56,27 @@ public class GroupController extends BaseController{
 			
 			List<Spost> mainSposts = spostService.findInGroup(groupId);
 			model.addAttribute("mainSposts", mainSposts);
+			
+			User userLogined = userService.getByUsername(getUsernameLogined());
+			model.addAttribute("isInGroup", groupService.checkInGroup(userLogined, groupId));
+			System.out.println("user id addGroup = " + userLogined.getId());
+			System.out.println("group id addGroup = " + groupId);
 			return "/user/group";
 		}
-		
 	}
 	
-	
+	//ok
 	@RequestMapping(value = "/user/group", method = RequestMethod.POST)
 	public String addGroup(@ModelAttribute("newGroup") Group newGroup,
 			@RequestParam("groupAvatar") MultipartFile groupAvatar) {
 			
 		if(newGroup.getId() == null){
-			newGroup.setUserId(getUserLogined().getId());
-			groupService.saveGroup(newGroup, groupAvatar);
+			groupService.saveGroup(newGroup, groupAvatar, getUserLogined());
 		}
-		
-			return "redirect:/user/group";
+		return "redirect:/user/group";
 	}
 	
+	// ok
 	@RequestMapping(value = "/user/group/join/{groupId}", method=RequestMethod.GET)
 	public String userJoinGroup(@PathVariable("groupId") Integer groupId) throws IOException{
 		
@@ -82,5 +85,16 @@ public class GroupController extends BaseController{
 			userLogined.addGroup(groupFocus); // tham gia 
 			userService.saveOrUpdate(userLogined);
 			return "redirect:/user/group/" + groupId;
+	}
+	
+	// ok
+	@RequestMapping(value = "/user/group/leave/{groupId}", method=RequestMethod.GET)
+	public String leaveGroup(@PathVariable("groupId") Integer groupId) {
+		
+		Group groupFocus = groupService.getById(groupId);
+		User userLogined = getUserLogined();
+		userLogined.deleteGroups(groupFocus); // rời group
+		userService.saveOrUpdate(userLogined);
+		return "redirect:/user/group";
 	}
 }

@@ -101,15 +101,17 @@
 	<div class="container">
 		
 		<div class="left-sidebar">
-			<div class="important-links">
+						<div class="important-links">
 				<a href="${classpath}/user/home" style="color: black"><img
-					src="${classpath}/StorageFolder/images/news.png" alt="">Latest News</a> 
-				<a href="${classpath}/user/friend" style="color: black"><img
-					src="${classpath}/StorageFolder/images/friends.png" alt="">Friends</a>
+					src="${classpath}/StorageFolder/images/news.png" alt="">Tin mới nhât</a> 
+				<a href="${classpath}/user/friends" style="color: black"><img
+					src="${classpath}/StorageFolder/images/friends.png" alt="">Bạn bè</a>
 				<a href="${classpath}/user/group" style="color: black"><img
-					src="${classpath}/StorageFolder/images/group.png" alt="">Groups</a>
+					src="${classpath}/StorageFolder/images/group.png" alt="">Nhóm</a>
 				<a href="${classpath}/user/profile" style="color: black"><img
-					src="${classpath}/StorageFolder/images/watch.png" alt="">Profile</a>
+					src="${classpath}/StorageFolder/images/watch.png" alt="">Trang cá nhân</a>
+				<a href="${classpath}/user/remembers" style="color: black"><img
+					src="${classpath}/StorageFolder/images/video.png" alt="">Đã lưu</a>
 			</div>
 		</div>
 
@@ -118,56 +120,18 @@
 		<div class="content-area">
 
 
-			<!-- =================== =================-->
-			<sf:form class="form" action="${classpath }/user/group" method="post" modelAttribute="newGroup" enctype="multipart/form-data">
-				<div class="write-post-container">
-					<div class="user-profile">
-						<img src="${classpath}/StorageFolder/${userLogined.avatar }" alt="">
-						<div>
-							<p>${userLogined.nickname }</p>
-							
-						</div>
-					</div>
-	
-					<div class="post-upload-textarea">
-						<input name="groupName" id="groupName" type="text" placeholder="tên nhóm"/>
-						<textarea name="description" id="description" placeholder="mô tả nhóm của bạn" 
-							cols="30" rows="3"></textarea>
-						<div class="add-post-links">
-						
-							<label for="groupAvatar" style="cursor: pointer; "><img
-									src="${classpath}/StorageFolder/images/photo.png" alt="">Thêm ảnh bìa</label>
-							<input id='groupAvatar' name='groupAvatar' type="file" style="width: 0.1px; height: 0.1px; overflow: hidden; position: absolute;"/>
-							<button type="submit" style="min-width:15px; border: 2px solid black; cursor: pointer" >Add group</button>
-						</div>
-					</div>
-				</div>
-			</sf:form>
-			
-			<!-- =================== =================-->
-			
-			
+			<!-- =================== =================-->		
+			<!-- =================== =================-->	
 			<!--========================= mainSposts ==========================-->
 			
-			 <h2 style="padding-bottom: 15px">Your group</h2>
-             <c:forEach var="group" items="${myGroups }" varStatus="loop">
+			 <h2 style="padding-bottom: 15px">Danh sách bạn bè</h2>
+             <c:forEach var="user" items="${myFollows }" varStatus="loop">
 				<div class="user-profile">
-					<a href="${classpath}/user/group/${group.id }" style="text-decoration: none; color: black"><img
-					src="${classpath}/StorageFolder/${group.avatar }" alt="" style="object-fit: cover; height: 45px">
+					<a href="${classpath}/user/profile/${user.id }" style="text-decoration: none; color: black"><img
+					src="${classpath}/StorageFolder/${user.avatar }" alt="" style="object-fit: cover; height: 45px">
 					</a>
-					<p style="overflow: hidden;">${group.groupName }</p>
-					<p style="overflow: hidden; margin-left: 10px; padding: 0px; opacity: 0.6; font-size: 14px">${group.description }</p>
-				</div>
-			</c:forEach>
-			<hr/>
-			<h2 style="padding-bottom: 15px">All group</h2>
-             <c:forEach var="group" items="${allGroups }" varStatus="loop">
-				<div class="user-profile">
-					<a href="${classpath}/user/group/${group.id }" style="text-decoration: none; color: black"><img
-					src="${classpath}/StorageFolder/${group.avatar }" alt="" style="object-fit: cover; height: 45px">
-					</a>
-					<p style="overflow: hidden;">${group.groupName }</p>
-					<p style="overflow: hidden; margin-left: 10px; padding: 0px; opacity: 0.6; font-size: 14px">${group.description }</p>
+					<p style="overflow: hidden;">${user.nickname }</p>
+					<p style="overflow: hidden; margin-left: 10px; padding: 0px; opacity: 0.6; font-size: 14px">${user.description }</p>
 				</div>
 			</c:forEach>
 		</div>

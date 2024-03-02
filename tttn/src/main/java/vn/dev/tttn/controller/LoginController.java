@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +37,11 @@ public class LoginController {
 	@GetMapping("/signup")
 	public String signup() throws IOException{
 		return "/signup";
+	}
+	
+	@GetMapping("/signup-manager")
+	public String signupManager() throws IOException{
+		return "/signup-manager";
 	}
 	
 	
@@ -74,9 +80,6 @@ public class LoginController {
 			newUser.setAvatar("avatars/Avatar_default.png");
 			newUser.setStatus(true);
 			
-			//set Role cho newuser - mặc dịnh role là customer.
-			// lấy Role có name là customer trong db;
-//			Role role = roleService.getRoleByName("CUSTOMER");
 			Role role = new Role();
 			role.setCreateDate(new Date());
 			role.setRoleName("USER");
@@ -87,12 +90,62 @@ public class LoginController {
 
 			userService.saveOrUpdate(newUser);
 
-			System.out.println("TAO TAI KHOAN");
-			System.out.println("\nUsername: " + newUser.getUsername());
-			System.out.println("pw: " + pw);
-			System.out.println("\nPassword: " + newUser.getPassword());
-			System.out.println("Email: " + newUser.getEmail());
-			System.out.println("Role: " + newUser.getRole());	
+//			System.out.println("TAO TAI KHOAN");
+//			System.out.println("\nUsername: " + newUser.getUsername());
+//			System.out.println("pw: " + pw);
+//			System.out.println("\nPassword: " + newUser.getPassword());
+//			System.out.println("Email: " + newUser.getEmail());
+//			System.out.println("Role: " + newUser.getRole());	
 			return "redirect:/login";
+		}
+		
+		
+		// SIGNUP MANAGER
+		@PreAuthorize("hasAuthority('BOSS')")
+		@RequestMapping(value="/register-manager", method=RequestMethod.POST)
+		public String signupManager(final Model model, final HttpServletRequest request,
+								final HttpServletResponse response)
+				throws IOException {
+			
+			// kiểm tra trùng lặp username 
+			String _username = request.getParameter("username");
+			List<User> users = userService.findAll();
+			for(User user : users) {
+				if(user.getUsername().equals(_username)) {
+					System.out.println("Trùng tên đăng nhập");
+					return "redirect:/signup";
+				}
+			}
+			
+			String pw = request.getParameter("password");
+			//biểu thức chính quy
+			// Tối thiểu tám ký tự, ít nhất một chữ cái, một số và một ký tự đặc biệt
+			Pattern pattern = Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$");
+			if (pattern.matcher(pw).matches() == true) {
+				pw = new BCryptPasswordEncoder(4).encode(pw);
+			}else {
+				return "redirect:/signup-manager";
+			}
+				
+			User newUser = new User();
+			newUser.setUsername(_username);
+			newUser.setPassword(pw);
+			newUser.setEmail(request.getParameter("email"));
+			newUser.setCreateDate(new Date());
+			newUser.setNickname(request.getParameter("nickname"));
+			newUser.setAvatar("avatars/Avatar_default.png");
+			newUser.setStatus(true);
+			
+			Role role = new Role();
+			role.setCreateDate(new Date());
+			role.setRoleName("MANAGER");
+			role.setUser_role(newUser);
+			newUser.setRole(role);
+			
+			System.out.println("\nRole's name: " + role.getRoleName());
+
+			userService.saveOrUpdate(newUser);
+
+			return "redirect:/user/profile";
 		}
 }

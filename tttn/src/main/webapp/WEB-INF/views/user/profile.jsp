@@ -17,9 +17,15 @@
 <!-- <link rel="stylesheet" href="style.css"> -->
 <link rel="stylesheet" href="${classpath }/css-js/css/style.css">
 <link rel="stylesheet" href="${classpath }/css-js/css/comment.css">
+<link rel="stylesheet" href="${classpath }/css-js/css/chat-app-copy-and-change-to-comment.css"></link>
 <title>Flowchat</title>
 <script src="https://kit.fontawesome.com/ef7e2b893b.js"
 	crossorigin="anonymous"></script>
+<link rel="stylesheet"
+	href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+	integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+	crossorigin="anonymous">
+
 </head>
 
 <body>
@@ -119,6 +125,10 @@
             <div class="right-dashboard-info">
                 <div class="right-dashboard-info-top">
 	                <c:choose>
+	                	<c:when test="${userFocus.username == 'boss' }">
+							<a href="${classpath }/chat-app"><button type="button"><i class="far fa-envelope"></i> Tin nhắn</button></a>
+							<a href="${classpath }/signup-manager"><button type="button"><i class="far fa-envelope"></i> Thêm quản lý</button></a>
+						</c:when>
 						<c:when test="${userFocus.username == usernameLogined }">
 							<a href="${classpath }/chat-app"><button type="button"><i class="far fa-envelope"></i> Tin nhắn</button></a>
 						</c:when>
@@ -126,6 +136,9 @@
 							<a href="${classpath }/chat-app"><button type="button"><i class="far fa-envelope"></i> Tin nhắn</button></a>
 							<c:if test="${isFriend == false}">
 								<a href="${classpath }/user/friend/${userFocus.id}"><button type="button"><i class="fas fa-user-plus"></i>Theo dõi</button></a>
+							</c:if>
+							<c:if test="${isFriend == true}">
+								<a href="${classpath }/user/unfriend/${userFocus.id}"><button type="button"><i class="fas fa-user-plus"></i>Bỏ theo dõi</button></a>
 							</c:if>
 						</c:otherwise>
 					</c:choose>
@@ -231,7 +244,7 @@
 							</div>
 						</div>
 						<div class="post-upload-textarea">
-							<textarea name="description" id="description" placeholder="What's on your mind, Alex?" 
+							<textarea name="description" id="description" placeholder="Bạn đang nghĩ gì" 
 								cols="30" rows="3"></textarea>
 							<div class="add-post-links">
 								<label for="picture" style="cursor: pointer; "><img
@@ -257,8 +270,14 @@
 								<small>${spost.createDate }</small>
 							</div>
 						</div>
-						<div>
-							<a href="#"><i class="fas fa-ellipsis-v"></i></a>
+						<div class="dropdown">
+						  <button class="dropbtn"><i class="fas fa-ellipsis-v"></i></button>
+						  <div class="dropdown-content">
+						  	  <c:if test="${usernameLogined == 'boss' || usernameLogined == spost.user_spost.username || userLogined.role.roleName == 'MANAGER'}">
+							  	<a href="${classpath }/user/spost/profile/delete/${spost.id }">Xóa</a>
+							  </c:if>
+							  <a href="${classpath }/user/spost/profile/remember/${spost.id }">Lưu</a>
+						  </div>
 						</div>
 					</div>
 					<div class="status-field" style="">
@@ -285,30 +304,57 @@
 								</c:otherwise>
 							</c:choose>
 							</div>
-							<div class='btn'>
-								<img src="${classpath}/StorageFolder/images/comments.png" 
-								alt="">${spost.getCommentQuantity() }
+							<div style="cursor: pointer;">
+								<a id="open${spost.id }" onclick="dialogStatus(${spost.id})"><img src="${classpath}/StorageFolder/images/comments.png" alt=""/>${spost.getCommentQuantity()}</a>
 							</div>
 							<div>
 								<img src="${classpath}/StorageFolder/images/share.png" alt="">35
 							</div>
 						</div>
 						<div class="post-profile-picture">
-							<img src="${classpath}/StorageFolder/images/profile-pic.png "
+							<img src="${classpath}/StorageFolder/${spost.user_spost.avatar}"
 								alt=""> <i class=" fas fa-caret-down"></i>
 						</div>
 					</div>
-				<!-- ==========================Comment box(dialog)======================== -->
-				<!-- ==================================================================== -->
-				
-				<div class="modal">
-				    <div class="modal-content">
-				        <span class="close">&times;</span>
-				        <p>Bình luận về bài viết của ${spost.user_spost.nickname }</p>
-				    </div>
-				</div>
-				<!-- ==================================================================== -->
-				<!-- ==================================================================== -->
+					<!-- ==========================Comment box(dialog)======================== -->
+					<!-- ==================================================================== -->
+					<dialog id="dialog${spost.id }" style="padding: 20px; margin: auto; padding-right: 0px; border-radius: inherit; border: 0.2px solid blue;">
+						<button id="close${spost.id }" onclick="dialogStatus(${spost.id})" style="font-size: 20px; color: black; background: red">&times;</button>
+						  <div  class="card-body msg_card_body" style="max-width: 500px">
+						        <c:forEach var="comment" items="${spost.comments }" varStatus="loop">
+						        	<div class="d-flex justify-content-start mb-4" 
+						        			style="display: flex; padding-top: 50px">
+										<div class="img_cont_msg">
+											<a href="${classpath }/user/profile/${comment.userId}"><img src="${classpath }/StorageFolder/${userService.getById(comment.userId).avatar }"
+												class="rounded-circle user_img_msg" style="border-radius: 100%;"></a>
+										</div>
+										<div class="msg_cotainer">
+											<p style="color: yellow" >${userService.getById(comment.userId).nickname }</p>
+											<span class="parnav">
+												${comment.content}</span>
+												<div style="min-width: 50px; text-align-content: center">
+													<span class="msg_time"><fmt:formatDate value="${comment.createDate }" pattern="MM-dd HH:mm" /></span>
+												</div>
+											</div>
+									</div>
+						        </c:forEach>
+						  </div>
+					  		<sf:form class="form" action="${classpath }/user/spost/profile/comment/${spost.id }" method="post" >
+								
+									<div class="input-group" style="display: flex;">
+										<textarea name="comment" id="comment" placeholder="Nhập bình luận" 
+											cols="30" rows="3" style="width:-webkit-fill-available"></textarea>											
+										<button type="submit"
+											style="color: rgb(10 170 250); height: 62px; width: 30px">
+											<span class="input-group-text send_btn"><i
+												class="fas fa-location-arrow"></i></span>
+										</button>
+									</div>
+								
+							</sf:form>
+					</dialog>
+					<!-- ==================================================================== -->
+					<!-- ==================================================================== -->
 				</div>
 			</c:forEach>
                 <button type="button" class="btn-LoadMore" onclick="LoadMoreToggle()">Load More</button>
@@ -323,24 +369,18 @@
 	 	crossorigin="anonymous"></script>
 	
 	<script type="text/javascript">
-	$(document).ready(function () {
-		  var modal = $('.modal');
-		  var btn = $('.btn');
-		  var span = $('.close');
-
-		  btn.click(function () {
-		    modal.show();
-		  });
-
-		  span.click(function () {
-		    modal.hide();
-		  });
-
-		  $(window).on('click', function (e) {
-		    if ($(e.target).is('.modal')) {
-		      modal.hide();
-		    }
-		  });
-	});
+	dialogStatus = function(_spostId) {
+		const dialog = document.querySelector("#dialog" + _spostId);
+		const open = document.querySelector("#open"+ _spostId);
+		const close = document.querySelector("#close"+ _spostId);
+	
+		open.addEventListener("click", () => {
+		  dialog.showModal();
+		})
+	
+		close.addEventListener("click", () => {
+		  dialog.close();
+		})
+		}
 	</script>
 </html>

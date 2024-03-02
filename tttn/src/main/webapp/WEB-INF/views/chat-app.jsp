@@ -60,7 +60,7 @@
 											<li class="active">
 												<div class="d-flex bd-highlight">
 													<div class="img_cont">
-														<img src="${user.avatar }" class="rounded-circle user_img">
+														<img src="${classpath }/StorageFolder/${user.avatar }" class="rounded-circle user_img">
 														<span class="online_icon"></span>
 													</div>
 													<div class="user_info">
@@ -75,7 +75,7 @@
 											<li>
 												<div class="d-flex bd-highlight">
 													<div class="img_cont">
-														<img src="${user.avatar }" class="rounded-circle user_img">
+														<img src="${classpath }/StorageFolder/${user.avatar }" class="rounded-circle user_img">
 														<span class="online_icon offline"></span>
 													</div>
 													<div class="user_info">
@@ -90,7 +90,7 @@
 											<li>
 												<div class="d-flex bd-highlight">
 													<div class="img_cont">
-														<img src="${user.avatar }" class="rounded-circle user_img">
+														<img src="${classpath }/StorageFolder/${user.avatar }" class="rounded-circle user_img">
 														<span class="online_icon"></span>
 													</div>
 													<div class="user_info">
@@ -117,7 +117,7 @@
 						<div class="card-header msg_head">
 							<div class="d-flex bd-highlight">
 								<div class="img_cont">
-									<img src="${partnerUser.avatar }"
+									<img src="${classpath }/StorageFolder/${partnerUser.avatar }"
 										class="rounded-circle user_img"> <span
 										class="online_icon"></span>
 								</div>
@@ -147,7 +147,7 @@
 								<c:if test="${message.user_message.getId() == partnerUser.id }">
 									<div class="d-flex justify-content-start mb-4">
 										<div class="img_cont_msg">
-											<img src="${partnerUser.avatar }"
+											<img src="${classpath }/StorageFolder/${partnerUser.avatar }"
 												class="rounded-circle user_img_msg">
 										</div>
 										<div class="msg_cotainer">
@@ -157,14 +157,10 @@
 												<span class="msg_time"><fmt:formatDate value="${message.createDate }" pattern="yyyy-MM-dd HH:mm:ss" /></span>
 											</div>
 										</div>
-
-
-
 									</div>
 								</c:if>
 								<c:if test="${message.user_message.getId() == subjectUser.id}">
 									<div class="d-flex justify-content-end mb-4">
-
 										<div class="msg_cotainer_send">
 											<span class="parnav"> ${message.content }
 												<ul class="subnav">
@@ -178,7 +174,7 @@
 											</div>
 										</div>
 										<div class="img_cont_msg">
-											<img src="${subjectUser.avatar }"
+											<img src="${classpath }/StorageFolder/${subjectUser.avatar }"
 												class="rounded-circle user_img_msg">
 										</div>
 									</div>

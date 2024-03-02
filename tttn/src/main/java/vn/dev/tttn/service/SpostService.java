@@ -2,6 +2,7 @@ package vn.dev.tttn.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import vn.dev.tttn.entity.Like;
+import vn.dev.tttn.entity.Remember;
 import vn.dev.tttn.entity.Spost;
 import vn.dev.tttn.entity.User;
 import vn.dev.tttn.illconst.Constants;
@@ -20,6 +22,9 @@ public class SpostService extends BaseService<Spost> implements Constants{
 	
 	@Autowired
 	private LikeService likeService;
+	
+	@Autowired
+	private RememberService rememberService;
 	
 	public List<Spost> findAll(){
 		return super.findAll();
@@ -102,4 +107,23 @@ public class SpostService extends BaseService<Spost> implements Constants{
 		return super.executeNativeSql(sql);
 	}
 	
+	@Transactional
+	public void delete(Spost spost) {
+		super.delete(spost);
+	}
+
+	public List<Spost> getRememberSposts(Integer loginedId){
+		List<Remember> remembers = rememberService.getRemembers(loginedId);
+		List<Spost> sposts = new ArrayList<Spost>();
+		for(Remember r : remembers) {
+			try {
+				Spost spost = super.getById(r.getSpostId());
+				sposts.add(spost);
+			}catch(NullPointerException e){
+				e.printStackTrace();
+				System.out.println("spost in getRememberSposts is null");
+			}
+		}
+		return sposts;
+	}
 }

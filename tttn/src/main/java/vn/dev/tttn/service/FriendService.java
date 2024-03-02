@@ -2,6 +2,7 @@ package vn.dev.tttn.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -20,10 +21,9 @@ public class FriendService extends BaseService<Friend>{
 	}
 	
 	// trả về Friend( phục vụ việc lấy user trong userService )
-	@SuppressWarnings("unchecked")
 	public List<Friend> getFriendList(Integer userId){
 		String sql = "select * from tttnsql.tbl_friend where user_id=" + userId + ";";
-		return (List<Friend>) this.getEntityByNativeSql(sql);
+		return super.executeNativeSql(sql);
 	}
 
 	@Transactional
@@ -35,16 +35,41 @@ public class FriendService extends BaseService<Friend>{
 		return super.saveOrUpdate(_friend);
 	}
 	
+	@Transactional
+	public void saveUnFrient(User userLogined, Integer userId) {
+		String sql = "select * from tttnsql.tbl_friend where user_id="
+						+ userLogined.getId() + " and friend_id=" + userId;
+		Friend _friend = super.getEntityByNativeSql(sql);
+		
+		super.delete(_friend);
+	}
 	
-	public boolean checkIsFriend(Integer loginedId, Integer objectId) {
-		String sql = "select * from tttnsql.tbl_friend where user_id=" + loginedId 
-					+ " and friend_id=" + objectId;
-		if(super.getEntityByNativeSql(sql) == null) {
-			return false;
+	
+//	public boolean checkIsFriend(Integer loginedId, Integer objectId) {
+//		String sql = "select * from tttnsql.tbl_friend where user_id=" + loginedId 
+//					+ " and friend_id=" + objectId;
+//		if(super.getEntityByNativeSql(sql) == null) {
+//			System.out.println("Checkin Friend FALSE ");
+//			return false;
+//		}
+//		System.out.println("Checkin Friend TRUE ");
+//		return true;
+//	}
+	public boolean checkIsFriend(User logined, Integer objectId) {
+		Set<Friend> friendsOfUser = logined.getFriends();
+		for(Friend f : friendsOfUser) {
+			if(f.getFriendId() == objectId) {
+			System.out.println("Checkin Friend FALSE ");
+			return true;
+			}
 		}
-		return true;
+		
+		System.out.println("Checkin Friend TRUE ");
+		return false;
 	}
 	/*lấy ra danh sach không chùng lặp tuwcslaf userId và objectId có tầm quan trọng như nhau
 	 *  làm thế nào để xác định objectId là bạn của friend
 	 *  lấy alllist sau đó order by với UserId */
+
+
 }

@@ -17,6 +17,7 @@
 <!-- <link rel="stylesheet" href="style.css"> -->
 <link rel="stylesheet" href="${classpath }/css-js/css/style.css">
 <link rel="stylesheet" href="${classpath }/css-js/css/comment.css">
+<link rel="stylesheet" href="${classpath }/css-js/css/chat-app-copy-and-change-to-comment.css"></link>
 <title>Flowchat</title>
 <script src="https://kit.fontawesome.com/ef7e2b893b.js"
 	crossorigin="anonymous"></script>
@@ -104,13 +105,15 @@
 		<div class="left-sidebar">
 			<div class="important-links">
 				<a href="${classpath}/user/home" style="color: black"><img
-					src="${classpath}/StorageFolder/images/news.png" alt="">Latest
-					News</a> <a href="${classpath}/user/friend" style="color: black"><img
-					src="${classpath}/StorageFolder/images/friends.png" alt="">Friends</a>
+					src="${classpath}/StorageFolder/images/news.png" alt="">Tin mới nhât</a> 
+				<a href="${classpath}/user/friends" style="color: black"><img
+					src="${classpath}/StorageFolder/images/friends.png" alt="">Bạn bè</a>
 				<a href="${classpath}/user/group" style="color: black"><img
-					src="${classpath}/StorageFolder/images/group.png" alt="">Groups</a>
+					src="${classpath}/StorageFolder/images/group.png" alt="">Nhóm</a>
 				<a href="${classpath}/user/profile" style="color: black"><img
-					src="${classpath}/StorageFolder/images/watch.png" alt="">Profile</a>
+					src="${classpath}/StorageFolder/images/watch.png" alt="">Trang cá nhân</a>
+				<a href="${classpath}/user/remembers" style="color: black"><img
+					src="${classpath}/StorageFolder/images/video.png" alt="">Đã lưu</a>
 			</div>
 		</div>
 
@@ -165,8 +168,14 @@
 								<small>${spost.createDate }</small>
 							</div>
 						</div>
-						<div>
-							<a href="#"><i class="fas fa-ellipsis-v"></i></a>
+						<div class="dropdown">
+						  <button class="dropbtn"><i class="fas fa-ellipsis-v"></i></button>
+						  <div class="dropdown-content">
+						  	  <c:if test="${usernameLogined == 'boss' || usernameLogined == spost.user_spost.username || userLogined.role.roleName == 'MANAGER'}">
+							  	<a href="${classpath }/user/spost/group/delete/${spost.id }">Xóa</a>
+							  </c:if>
+							  <a href="${classpath }/user/spost/group/remember/${spost.id }">Lưu</a>
+						  </div>
 						</div>
 					</div>
 					<div class="status-field" style="">
@@ -187,7 +196,7 @@
 											alt="">${spost.getLikeQuantity() }</a>
 									</c:when>
 									<c:otherwise>
-										<a href="${classpath }/user/home/like/${spost.id}" style="text-decoration: none;">
+										<a href="${classpath }/user/group/like/${spost.id}" style="text-decoration: none;">
 										<img src="${classpath}/StorageFolder/images/like.png"
 											alt="">${spost.getLikeQuantity() }</a>
 									</c:otherwise>
@@ -201,7 +210,7 @@
 							</div>
 						</div>
 						<div class="post-profile-picture">
-							<img src="${classpath}/StorageFolder/images/profile-pic.png "
+							<img src="${classpath}/StorageFolder/${spost.user_spost.avatar}"
 								alt=""> <i class=" fas fa-caret-down"></i>
 						</div>
 					</div>
@@ -225,7 +234,16 @@
 			<h3>${groupFocus.groupName }</h3>
 			
 			<div style="text-decoration: none; border: 1px solid green; max-width: 135px;">
-				<a href="${classpath }/user/group/join/${groupFocus.id }" role="button" style="text-decoration: none; color: black">Tham gia nhóm</a>
+ 				<c:choose>
+					<c:when test="${isInGroup == true}">
+						<a href="${classpath }/user/group/leave/${groupFocus.id }" role="button" style="text-decoration: none; color: black">Rời nhóm</a>
+					</c:when>
+					<c:otherwise>
+						<a href="${classpath }/user/group/join/${groupFocus.id }" role="button" style="text-decoration: none; color: black">Tham gia nhóm</a>
+					</c:otherwise>
+				</c:choose>
+				
+				
 			</div>
 			<input id="groupFocusId" name="groupFocusId" value="${groupFocus.id }" style="visibility: hidden"/>
 			<hr/>
@@ -277,24 +295,5 @@
 	});
 	</script>
 	
-	<script type="text/javascript">
-		addPost = function() {		
-			//$ === jQuery
-			jQuery.ajax({
-				url : "/user/post",// action
-				type : "POST",
-				contentType: "application/json",
-				data : JSON.stringify(data),
-				dataType : "json", 
-				
-				success : function(jsonResult) {
-					alert(jsonResult.code + ": " + jsonResult.status); 
-				},
-				
-				error : function(jqXhr, textStatus, errorMessage) {
-					alert(jsonResult.code + ': Luu thanh cong...!')
-				}
-			});
-		}
-	</script>
+
 </html>
